@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Webhook Client</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #36393f;
+            color: #dcddde;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #2f3136;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #202225;
+            border-bottom: 1px solid #4f545c;
+        }
+
+        .top-bar input[type="text"] {
+            flex: 1;
+            background-color: #40444b;
+            color: #ffffff;
+            border: 1px solid #4f545c;
+            border-radius: 5px;
+            padding: 10px;
+            margin-right: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .top-bar button {
+            background-color: #7289da;
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .top-bar button:hover {
+            background-color: #5b6eae;
+        }
+
+        .header {
+            background-color: #202225;
+            padding: 10px;
+            color: #ffffff;
+            text-align: center;
+            font-size: 18px;
+            border-bottom: 1px solid #4f545c;
+        }
+
+        .message-area {
+            flex: 1;
+            padding: 20px;
+            background-color: #40444b;
+            border-bottom: 1px solid #4f545c;
+            overflow-y: auto;
+        }
+
+        .message-box {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #40444b;
+            border-top: 1px solid #4f545c;
+        }
+
+        .message-box input[type="text"] {
+            flex: 1;
+            background-color: #40444b;
+            color: #ffffff;
+            border: 1px solid #4f545c;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .message-box button {
+            background-color: #7289da;
+            border: none;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+
+        .message-box button:hover {
+            background-color: #5b6eae;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <input type="text" id="webhook-url" placeholder="Enter your webhook URL...">
+            <button onclick="setWebhook()">Set Webhook</button>
+        </div>
+        <div class="header">
+            Discord Webhook Client
+        </div>
+        <div class="message-area" id="message-area">
+        </div>
+        <div class="message-box">
+            <input type="text" id="message" placeholder="Type your message here...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        let webhookUrl = '';
+
+        function setWebhook() {
+            webhookUrl = document.getElementById('webhook-url').value;
+            if (webhookUrl) {
+                alert('Webhook URL set successfully!');
+            } else {
+                alert('Please enter a valid webhook URL.');
+            }
+        }
+
+        function sendMessage() {
+            const message = document.getElementById('message').value;
+            if (message && webhookUrl) {
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content: message })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        displayMessage(`You: ${message}`);
+                        document.getElementById('message').value = '';
+                    } else {
+                        alert('Failed to send message.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to send message.');
+                });
+            } else {
+                alert('Please enter a message and set a webhook URL.');
+            }
+        }
+
+        function displayMessage(message) {
+            const messageArea = document.getElementById('message-area');
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messageArea.appendChild(messageElement);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
+    </script>
+</body>
+</html>
